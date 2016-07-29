@@ -47,6 +47,7 @@ $http(sampleGetReq).then(function(data){
 var defaultHeaders = {'Content-Type': 'application/json'};
 
 function _parseParams(params){
+  if (!params) return;
   var _paramsString=''; var separator;
   Object.keys(params).forEach(function(key,index) {
       if (index===0){separator='?'} else {separator='&'} 
@@ -57,7 +58,7 @@ function _parseParams(params){
 
 function $http(config) {
 
-  var content=null;
+  var content;
 
   var httpOptions = {
     host: config.host,
@@ -88,10 +89,14 @@ function $http(config) {
         reject(JSON.parse(d));
       });
       res.on('close', function() {
-        console.log('chunk', d)
         resolve(JSON.parse(d));
       });
-    }).end(content);  
+    });
+    if (['POST', 'UPDATE'].some(function(method){ return method === config.method; })){
+      req.end(content);  
+    } else {
+      req.end();
+    }
   });
 
   return p;
