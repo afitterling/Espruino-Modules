@@ -29,17 +29,23 @@ var sampleGetReq={
   host: 'api.carriots.com',
   path: '/streams/',
   port: '80',
-  protocol: "v1",
-  checksum: "",
-  device: "defaultDevice@afitterling.afitterling",
-  at: "now",
   method: 'GET',
-  params: {device: 'Commander@afitterling.afitterling'}
+  params: {_t: 'str', device: 'Commander@afitterling.afitterling'}
 };
 
 $http(sampleGetReq).then(function(data){
   // success
   console.log('success', data);
+});
+
+
+$http(sampleGetReq).then(function(data){
+  // success
+  console.log('success', data);
+  $http(samplePostReq).then(function(data){
+    // success
+    console.log('success', data);
+  });
 });
 
 */
@@ -58,7 +64,8 @@ function _parseParams(params){
 
 function $http(config) {
 
-  var content;
+  var content=null;
+  var data = null;
 
   var httpOptions = {
     host: config.host,
@@ -68,8 +75,13 @@ function $http(config) {
     headers: $http.defaultHeaders
   };
 
-  if (['POST', 'UPDATE'].some(function(method){ return method === config.method; })){
-    var data = {};
+  if (config.method==='GET' || config.method==='DELETE'){
+    httpOptions.headers['Content-Length'] = 0;
+  }
+
+  if (config.method==='UPDATE' || config.method==='POST'){
+    console.log('update/post');
+    data = {};
     data.device = config.device;
     data.protocol = config.protocol;
     data.checksum = config.checksum || null;
@@ -77,9 +89,10 @@ function $http(config) {
     // the actual cariots request api data
     data.data = config.data;
     content = JSON.stringify(data);
-    console.log(httpOptions, data);
     httpOptions.headers['Content-Length'] = content.length;
   }
+
+  console.log(httpOptions, data);
 
   var p = new Promise(function(resolve, reject){
     var req = require('http').request(httpOptions, function(res)  {
@@ -91,12 +104,7 @@ function $http(config) {
       res.on('close', function() {
         resolve(JSON.parse(d));
       });
-    });
-    if (['POST', 'UPDATE'].some(function(method){ return method === config.method; })){
-      req.end(content);  
-    } else {
-      req.end();
-    }
+    }).end(content)
   });
 
   return p;
