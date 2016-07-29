@@ -47,7 +47,7 @@ $http(sampleGetReq).then(function(data){
 var defaultHeaders = {'Content-Type': 'application/json'};
 
 function _parseParams(params){
-  if (!params) return;
+  if (!params) return '';
   var _paramsString=''; var separator;
   Object.keys(params).forEach(function(key,index) {
       if (index===0){separator='?'} else {separator='&'} 
