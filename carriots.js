@@ -103,8 +103,6 @@ function $http(config) {
   
 }
 
-$http.post = function(){}; //@TODO
-
 $http.defaultHeaders = defaultHeaders;
 
 exports = {
