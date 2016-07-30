@@ -143,7 +143,7 @@ function receiveHandler(line) {
   var len = line.length-(colon+3);
   if (len>=parms[1]) {
    // we have everything
-   sockData[parms[0]] += line.substr(colon+1,parms[1]);
+   sockData[parms[0]] += line.substr(colon+3,parms[1]);
    return line.substr(colon+parms[1]+3); // return anything else
   } else { 
    // still some to get
