@@ -66,6 +66,7 @@ function $http(config) {
 
   var content=null;
   var data = null;
+  var debug=false;
 
   var _safeJSONParse = function(data){
     return new Promise(function(resolve, reject){
@@ -86,7 +87,6 @@ function $http(config) {
   }
 
   if (config.method==='UPDATE' || config.method==='POST'){
-    console.log('update/post');
     data = {};
     data.device = config.device;
     data.protocol = config.protocol;
@@ -98,8 +98,10 @@ function $http(config) {
     httpOptions.headers['Content-Length'] = content.length;
   }
 
-//  console.log(httpOptions, data);
-
+  if (debug){
+    console.log(httpOptions, data);  
+  }
+  
   return new Promise(function(resolve, reject){
     var req = require('http').request(httpOptions, function(res)  {
       var d = '';
