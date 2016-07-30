@@ -67,6 +67,12 @@ function $http(config) {
   var content=null;
   var data = null;
 
+  var _safeJSONParse = function(data){
+    return new Promise(function(resolve, reject){
+        try { resolve(JSON.parse(data)) } catch(e){ reject(e) }
+      });      
+  };
+
   var httpOptions = {
     host: config.host,
     path: config.path + _parseParams(config.params),
@@ -92,23 +98,25 @@ function $http(config) {
     httpOptions.headers['Content-Length'] = content.length;
   }
 
-  console.log(httpOptions, data);
+//  console.log(httpOptions, data);
 
-  var p = new Promise(function(resolve, reject){
+  return new Promise(function(resolve, reject){
     var req = require('http').request(httpOptions, function(res)  {
       var d = '';
       res.on('data', function(data) { d+= data; });
-      res.on('error', function() {
-        reject(JSON.parse(d));
+      res.on('error', function(e) {
+        return reject(e)  
       });
       res.on('close', function() {
-        resolve(JSON.parse(d));
+        _safeJSONParse(d).then(function(data){
+          return resolve(data);    
+        }, function(e){
+          return reject(e)  
+        });        
       });
     }).end(content)
   });
 
-  return p;
-  
 }
 
 $http.defaultHeaders = defaultHeaders;
