@@ -64,9 +64,9 @@ function _parseParams(params){
 
 function $http(config) {
 
-  var content=null;
-  var data = null;
-  var debug=false;
+  var content = null;
+  var data    = null;
+  var debug   = false;
 
   var _safeJSONParse = function(data){
     return new Promise(function(resolve, reject){
@@ -124,6 +124,10 @@ function $http(config) {
 }
 
 $http.defaultHeaders = defaultHeaders;
+
+$http.debug = function(val){
+  debug = val;
+};
 
 exports = {
   defaultHeaders: defaultHeaders,
