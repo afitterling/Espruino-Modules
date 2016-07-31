@@ -99,7 +99,7 @@ function $http(config) {
   }
 
   if (debug){
-    console.log(httpOptions, data);  
+    console.log('httpOptions=', httpOptions, 'data=', data);  
   }
   
   return new Promise(function(resolve, reject){
@@ -111,10 +111,10 @@ function $http(config) {
       });
       res.on('close', function() {
         _safeJSONParse(d).then(function(data){
-          if (debug) console.log('resolve', data);
+          if (debug) console.log('resolve=', data);
           return resolve(data);    
         }, function(e){
-          if (debug) console.log('reject', e);
+          if (debug) console.log('reject=', e);
           return reject(e)  
         });        
       });
