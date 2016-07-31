@@ -51,6 +51,7 @@ $http(sampleGetReq).then(function(data){
 */
 
 var defaultHeaders = {'Content-Type': 'application/json'};
+var debug   = false;
 
 function _parseParams(params){
   if (!params) return '';
@@ -66,8 +67,7 @@ function $http(config) {
 
   var content = null;
   var data    = null;
-  var debug   = false;
-
+  
   var _safeJSONParse = function(data){
     return new Promise(function(resolve, reject){
         try { resolve(JSON.parse(data)) } catch(e){ reject(e) }
