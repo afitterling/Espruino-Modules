@@ -11,7 +11,7 @@ var clk = new Clock();
 var settings = require('http://localhost:3000/settings.js');
 
 $http.defaultHeaders['carriots.apiKey'] = settings.carriots.apiKey;
-$http.debug(true);
+$http.debug(false);
 
 WaterCycle(1,0);
 WaterCycle(2,0);
@@ -486,7 +486,6 @@ function applyJobToHWAsChunks(cycle, lengthInMin ,fn){
       return;
 
     } else {
-
       if (activeJob && (jobIterations % 2) === 0){
         var flowAvg = FlowMeter.getAvg();
         var flowMax = FlowMeter.getMax();
@@ -503,7 +502,10 @@ function applyJobToHWAsChunks(cycle, lengthInMin ,fn){
           method:'POST',
           data: {
             job: "progress",
-            //data: activeJob,
+            id: activeJob.id,
+            cycle: activeJob.cycle,
+            time: activeJob.time,
+            length: lengthInMin,
             avg: flowAvg,
             max: flowMax,
             iteration: jobIterations,
@@ -514,7 +516,6 @@ function applyJobToHWAsChunks(cycle, lengthInMin ,fn){
     }
     return applyJobToHWAsChunks(cycle, lengthInMin, fn);
   }, 1 * SECONDSINMINUTES * 1000);
-
 }
 
 
