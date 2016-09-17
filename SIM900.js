@@ -53,7 +53,7 @@ var netCallbacks = {
     } else {
       var sckt = 0;
       while (socks[sckt]!==undefined) sckt++; // find free socket
-      if (sckt>=MAXSOCKETS) throw new Error('No free sockets.')
+      //if (sckt>=MAXSOCKETS) throw new Error('No free sockets.')
       socks[sckt] = "Wait";
       sockData[sckt] = "";
       at.cmd('AT+CIPSTART='+sckt+',"TCP",'+JSON.stringify(host)+','+port+'\r\n',10000, function(d) {
@@ -81,8 +81,7 @@ var netCallbacks = {
     if(socks[sckt]) {
       at.cmd('AT+CIPCLOSE='+sckt+"\r\n",1000, function(/*d*/) {   
         socks[sckt] = undefined;
-      });
-      
+      });      
     }
   },
   /* Accept the connection on the server socket. Returns socket number or -1 if no connection */
@@ -176,6 +175,16 @@ var gprsFuncs = {
       socks:socks,
       sockData:sockData
     };
+  },
+  "shutdown": function(fn){
+    for (var i=0;i<MAXSOCKETS;i++){
+      setTimeout(function(){
+        netCallbacks.close(i);
+      }, 2000*i)
+    }
+    setTimeout(function(){
+      fn();
+    }, 10000);
   },
   // initialise the SIM900A
   "init": function(callback) {
@@ -313,7 +322,7 @@ var gprsFuncs = {
 exports.connect = function(usart, resetPin, connectedCallback) {
   rst = resetPin;
   gprsFuncs.at = at = require('http://localhost:3000/AT.js').connect(usart);
-  require("NetworkJS").create(netCallbacks);
+  gprsFuncs.networkJS = require("NetworkJS").create(netCallbacks);
   at.register("+RECEIVE", receiveHandler);
   at.register("+D", receiveHandler2);
   gprsFuncs.reset(connectedCallback);
