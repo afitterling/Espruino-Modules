@@ -1,4 +1,4 @@
-var _pin, _timeout, _noFlow;
+var _pin, _timeout, _noFlow, _enablePin;
 
 var _series=[];
 
@@ -8,14 +8,23 @@ function _sample(){
   _series.push(_val);
 }
 
-function setup(pin){
+function setup(pin, enablePin){
   _pin = pin;
+  _enablePin = enablePin;
+}
+
+function enable(mode){
+  if (mode){
+    digitalWrite(_enablePin, 0);
+  } else {
+    digitalWrite(_enablePin, 1);
+  }
 }
 
 function run(){
   _timeout = setInterval(function(){
     _sample();
-    if (_series.length>10){
+    if (_series.length>20){
       _series.shift();
     };
   }, 2000);
@@ -57,13 +66,19 @@ function hasFlow(){
   return getAvg()>_noFlow * 2;
 }
 
+function getSeries(){
+  return _series;
+}
+
 exports = {
 	setup: setup,
   run: run,
   getMax: getMax,
   getAvg: getAvg,
   hasFlow: hasFlow,
+  getSeries: getSeries,
   stop: stop,
+  enable: enable,
   calibrate: calibrate
 };
 
