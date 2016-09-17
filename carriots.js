@@ -52,8 +52,6 @@ $http(sampleGetReq).then(function(data){
 
 var defaultHeaders = {'Content-Type': 'application/json'};
 var debug   = false;
-var delayedReject = false;
-var timeOut;
 
 function _parseParams(params){
   if (!params) return '';
@@ -106,12 +104,6 @@ function $http(config) {
   
   return new Promise(function(resolve, reject){
     var req = require('http').request(httpOptions, function(res)  {
-      var resolved = false;
-      if (delayedReject) {
-        setTimeout(function(){
-          if (!resolved) reject({status: "timedOut"});
-        }, timeOut);
-      }
       var d = '';
       res.on('data', function(data) { d+= data; });
       res.on('error', function(e) {
@@ -120,7 +112,6 @@ function $http(config) {
       res.on('close', function() {
         _safeJSONParse(d).then(function(data){
           if (debug) console.log('resolve=', data);
-          resolved = true;
           return resolve(data);    
         }, function(e){
           if (debug) console.log('reject=', e);
@@ -136,11 +127,6 @@ $http.defaultHeaders = defaultHeaders;
 
 $http.debug = function(val){
   debug = val;
-};
-
-$http.delayedReject = function(val, time){
-  delayedReject = val;
-  timeOut = time * 1000;
 };
 
 exports = {
